@@ -407,7 +407,6 @@ export const Lobby3D: React.FC<Lobby3DProps> = ({
   const fetchRoomStats = useCallback(async () => {
     try {
       const serverUrl = import.meta.env.VITE_SERVER_URL || '';
-      if (!serverUrl) return;
       const [resRooms, resLb] = await Promise.all([
         fetch(`${serverUrl}/api/rooms`),
         fetch(`${serverUrl}/api/leaderboard`)
@@ -751,7 +750,6 @@ export const Lobby3D: React.FC<Lobby3DProps> = ({
     const syncLobby = async () => {
       try {
         const serverUrl = import.meta.env.VITE_SERVER_URL || '';
-        if (!serverUrl) return;
         const res = await fetch(`${serverUrl}/api/lobby-players`);
         if (res.ok) {
           const players: any[] = await res.json();

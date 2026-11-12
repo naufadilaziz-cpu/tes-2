@@ -49,7 +49,7 @@ const SEAT_COORDINATES = [
 ];
 
 export const App: React.FC = () => {
-  const [socket, setSocket] = useState<any | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [tableState, setTableState] = useState<TableStatePublic | null>(null);
   const [myCards, setMyCards] = useState<Card[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -277,16 +277,14 @@ export const App: React.FC = () => {
     showToast('Mikrofon dimatikan.');
   };
 
-  // 1. Socket initialization (Local Engine by default for 100% free static deployment without WebSocket)
+  // 1. Socket initialization (Connect to WebSocket server for online multiplayer & chat)
   useEffect(() => {
     const serverUrl = import.meta.env.VITE_SERVER_URL || '';
-    const s: any = serverUrl
-      ? io(serverUrl, {
-          transports: ['websocket', 'polling'],
-          reconnection: true,
-          reconnectionDelay: 500
-        })
-      : getGameSocket();
+    const s = io(serverUrl || undefined, {
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionDelay: 500
+    });
 
     s.on('connect', () => {
       voiceChat.init(s);
