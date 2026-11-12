@@ -135,13 +135,14 @@ export class LocalRoomManager {
     this.walletManager.deductBalance(amount);
     socket.trigger('wallet:updated', this.walletManager.getOrCreateWallet());
 
-    const result = table.sit(seatIndex, {
-      id: socket.id,
-      name: playerName || record.name,
-      chips: amount,
-      walletId: record.walletId,
-      isBot: false
-    });
+    const result = table.sit(
+      socket.id,
+      playerName || record.name,
+      seatIndex,
+      false,
+      amount,
+      record.walletId
+    );
 
     if (!result.success) {
       this.walletManager.addBalance(amount);
@@ -182,7 +183,10 @@ export class LocalRoomManager {
   public playerAction(socket: LocalSocket, { action, amount }: any): void {
     const table = this.tables.get(this.activeRoomId);
     if (!table) return;
-    table.handlePlayerAction(socket.id, action, amount);
+    const res = table.handleAction(socket.id, action, amount);
+    if (!res.success && res.error) {
+      socket.trigger('errorAlert', res.error);
+    }
   }
 
   public addBot(socket: LocalSocket): void {
@@ -194,19 +198,21 @@ export class LocalRoomManager {
     }
   }
 
-  public kickBot(socket: LocalSocket, { seatIndex }: any): void {
+  public kickBot(_socket: LocalSocket, { seatIndex }: any): void {
     const table = this.tables.get(this.activeRoomId);
     if (!table) return;
-    const res = table.kickBot(seatIndex);
-    if (!res.success) {
-      socket.trigger('errorAlert', res.error || 'Gagal mengeluarkan bot');
-    }
+    table.kickBot(seatIndex);
   }
 
   public tipPlayer(socket: LocalSocket, { targetSeatIndex, amount }: any): void {
     const table = this.tables.get(this.activeRoomId);
     if (!table) return;
-    table.tipPlayer(socket.id, targetSeatIndex, amount);
+    const res = table.tipPlayer(socket.id, targetSeatIndex, amount);
+    if (res.success && res.tipData) {
+      socket.trigger('playerTipped', res.tipData);
+    } else if (res.error) {
+      socket.trigger('errorAlert', res.error);
+    }
   }
 
   public toggleReady(socket: LocalSocket): void {
@@ -215,10 +221,15 @@ export class LocalRoomManager {
     table.toggleReady(socket.id);
   }
 
-  public sendChat(socket: LocalSocket, { message, senderName }: any): void {
-    const table = this.tables.get(this.activeRoomId);
-    if (!table) return;
-    table.sendChat(senderName, message);
+  public sendChat(_socket: LocalSocket, { message, senderName }: any): void {
+    const msg: ChatMessage = {
+      id: `chat_${Date.now()}_${Math.random()}`,
+      senderName: senderName || 'Pemain',
+      message: message || '',
+      timestamp: Date.now(),
+      isSystem: false
+    };
+    this.broadcastChatMessage(this.activeRoomId, msg);
   }
 
   public claimRelief(socket: LocalSocket, { walletId, name }: any): void {
