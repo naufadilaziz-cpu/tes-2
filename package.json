@@ -3,18 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev:server": "cd server && pnpm dev",
-    "dev:client": "cd client && pnpm dev",
-    "dev": "pnpm --parallel --filter \"./server\" --filter \"./client\" dev || (start cmd /k \"cd server && pnpm dev\" & cd client && pnpm dev)",
-    "build:client": "npm --prefix client run build",
-    "build:server": "npm --prefix server run build",
-    "build": "npm --prefix client run build && npm --prefix server run build",
-    "start": "node server/dist/index.js",
-    "install:all": "cd server && pnpm install && cd ../client && pnpm install"
-  },
-  "dependencies": {
-    "cors": "^2.8.6",
-    "express": "^5.3.0",
-    "socket.io": "^4.8.4"
+    "dev": "npm --prefix client run dev",
+    "build": "npm --prefix client install && npm --prefix client run build",
+    "preview": "npm --prefix client run preview",
+    "start": "npm --prefix client run preview",
+    "install:all": "npm --prefix client install"
   }
 }

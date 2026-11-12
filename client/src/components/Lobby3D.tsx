@@ -239,7 +239,12 @@ export const Lobby3D: React.FC<Lobby3DProps> = ({
   const mountRef = useRef<HTMLDivElement>(null);
 
   // UI state
-  const [roomData, setRoomData] = useState<Record<string, RoomInfo>>({});
+  const [roomData, setRoomData] = useState<Record<string, RoomInfo>>({
+    'meja-1': { roomId: 'meja-1', name: 'Meja Santai #1', playerCount: 3, maxSeats: 8, stage: 'WAITING', smallBlind: 1000, bigBlind: 2000, startingChips: 1000000 },
+    'meja-2': { roomId: 'meja-2', name: 'Meja Reguler #2', playerCount: 4, maxSeats: 8, stage: 'PREFLOP', smallBlind: 2500, bigBlind: 5000, startingChips: 1000000 },
+    'meja-vip': { roomId: 'meja-vip', name: 'Meja VIP High Roller', playerCount: 2, maxSeats: 8, stage: 'FLOP', smallBlind: 10000, bigBlind: 20000, startingChips: 1000000 },
+    'meja-turnamen': { roomId: 'meja-turnamen', name: 'Meja Turnamen Royale', playerCount: 5, maxSeats: 8, stage: 'TURN', smallBlind: 25000, bigBlind: 50000, startingChips: 1000000 }
+  });
   const [fetchedLeaderboard, setFetchedLeaderboard] = useState<WalletRecord[]>([]);
   const [nearbyTable, setNearbyTable] = useState<TableConfig | null>(null);
   const [selectedTable, setSelectedTable] = useState<TableConfig | null>(null);
@@ -402,6 +407,7 @@ export const Lobby3D: React.FC<Lobby3DProps> = ({
   const fetchRoomStats = useCallback(async () => {
     try {
       const serverUrl = import.meta.env.VITE_SERVER_URL || '';
+      if (!serverUrl) return;
       const [resRooms, resLb] = await Promise.all([
         fetch(`${serverUrl}/api/rooms`),
         fetch(`${serverUrl}/api/leaderboard`)
@@ -745,6 +751,7 @@ export const Lobby3D: React.FC<Lobby3DProps> = ({
     const syncLobby = async () => {
       try {
         const serverUrl = import.meta.env.VITE_SERVER_URL || '';
+        if (!serverUrl) return;
         const res = await fetch(`${serverUrl}/api/lobby-players`);
         if (res.ok) {
           const players: any[] = await res.json();

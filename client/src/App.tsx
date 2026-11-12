@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { getGameSocket } from './engine/LocalSocket';
 import confetti from 'canvas-confetti';
 import { Card, ChatMessage, TableStatePublic, WalletRecord } from './types.js';
 import { PlayerSeat } from './components/PlayerSeat.js';
@@ -48,7 +49,7 @@ const SEAT_COORDINATES = [
 ];
 
 export const App: React.FC = () => {
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const [socket, setSocket] = useState<any | null>(null);
   const [tableState, setTableState] = useState<TableStatePublic | null>(null);
   const [myCards, setMyCards] = useState<Card[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -276,14 +277,16 @@ export const App: React.FC = () => {
     showToast('Mikrofon dimatikan.');
   };
 
-  // 1. Socket initialization (persistent single socket connection)
+  // 1. Socket initialization (Local Engine by default for 100% free static deployment without WebSocket)
   useEffect(() => {
     const serverUrl = import.meta.env.VITE_SERVER_URL || '';
-    const s = io(serverUrl || undefined, {
-      transports: ['websocket', 'polling'],
-      reconnection: true,
-      reconnectionDelay: 500
-    });
+    const s: any = serverUrl
+      ? io(serverUrl, {
+          transports: ['websocket', 'polling'],
+          reconnection: true,
+          reconnectionDelay: 500
+        })
+      : getGameSocket();
 
     s.on('connect', () => {
       voiceChat.init(s);

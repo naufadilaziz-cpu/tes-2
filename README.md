@@ -40,11 +40,10 @@ pnpm dev
 Server Node.js sudah otomatis menyajikan bundle client dari `client/dist`:
 ```bash
 # Build client & server
-cd client && pnpm build
-cd ../server && pnpm build
+npm run build
 
 # Jalankan server
-node server/dist/index.js
+npm start
 ```
 Buka browser di: **`http://localhost:3050`**
 
@@ -55,3 +54,39 @@ Buka browser di: **`http://localhost:3050`**
 2. Klik tombol **Meja: MEJA-1** di pojok kanan atas, lalu klik **Salin Link Undangan Teman**.
 3. Jika bermain di jaringan lokal (WiFi yang sama), ganti `localhost` dengan IP lokal laptop Anda (misal `http://192.168.1.50:3050?room=meja-1`).
 4. Teman Anda tinggal membuka link tersebut, klik kursi kosong bertanda **+ Duduk**, dan permainan langsung dimulai!
+
+---
+
+## 🚀 Panduan Deploy Gratis 100% (Tanpa WebSocket / Standalone Client)
+
+Aplikasi game ini sekarang sudah dilengkapi **Local Game Engine** bawaan di sisi browser! Anda tidak perlu lagi menyewa atau menjalankan server WebSocket terpisah yang sering *sleep* atau lemot. Seluruh logika Texas Hold'em, Bot AI, chip, dompet, audio, serta 4 minigame (Blackjack, Roulette, Crash, Slots) berjalan langsung di browser dengan sangat cepat dan mulus.
+
+---
+
+### Opsi 1: Vercel (Paling Direkomendasikan - 1 Klik Selesai)
+1. Buka [Vercel.com](https://vercel.com) dan login dengan akun GitHub Anda.
+2. Klik tombol **Add New...** $\rightarrow$ **Project**.
+3. Pilih repositori **`Jonanda27/tes2`**.
+4. Vercel akan otomatis membaca file `vercel.json` yang sudah kami sediakan:
+   - **Framework Preset**: Vite
+   - **Build Command**: `npm --prefix client run build`
+   - **Output Directory**: `client/dist`
+5. Klik **Deploy**.
+6. Selesai dalam 30 detik! Anda akan mendapatkan link HTTPS gratis (misal: `https://tes2-xxx.vercel.app`) yang **selalu aktif 24/7 tanpa pernah masuk mode sleep**.
+
+---
+
+### Opsi 2: GitHub Pages (100% Gratis Tanpa Akun Tambahan)
+Repositori ini sudah dilengkapi GitHub Actions workflow otomatis:
+1. Buka repositori Anda di GitHub: `https://github.com/Jonanda27/tes2`.
+2. Klik tab **Settings** $\rightarrow$ menu **Pages** di sebelah kiri.
+3. Pada bagian **Build and deployment** $\rightarrow$ **Source**, pilih **GitHub Actions**.
+4. Lakukan git push ke branch `main`. GitHub Actions akan otomatis mem-build dan merilis game Anda ke link:
+   `https://jonanda27.github.io/tes2/`
+
+---
+
+### Opsi 3: Netlify atau Cloudflare Pages
+- Cukup hubungkan repositori `Jonanda27/tes2` di dashboard Netlify atau Cloudflare Pages.
+- Build command: `npm --prefix client run build`
+- Publish directory: `client/dist`
